@@ -219,6 +219,13 @@ class Vast(clouds.Cloud):
             default_value={},
             override_configs=resources.cluster_config_overrides,
         )
+        min_cuda_version = skypilot_config.get_effective_region_config(
+            cloud='vast',
+            region=region.name,
+            keys=('min_cuda_version',),
+            default_value=None,
+            override_configs=resources.cluster_config_overrides,
+        )
 
         return {
             'instance_type': resources.instance_type,
@@ -227,6 +234,7 @@ class Vast(clouds.Cloud):
             'image_id': image_id,
             'secure_only': secure_only,
             'create_instance_kwargs': create_instance_kwargs or {},
+            'min_cuda_version': min_cuda_version,
         }
 
     def _get_feasible_launchable_resources(

@@ -46,7 +46,8 @@ def launch(name: str,
            private_docker_registry: Optional[bool] = None,
            login: Optional[str] = None,
            create_instance_kwargs: Optional[Dict[str, Any]] = None,
-           ssh_public_key: Optional[str] = None) -> str:
+           ssh_public_key: Optional[str] = None,
+           min_cuda_version: Optional[float] = None) -> str:
     """Launches an instance with the given parameters.
 
     Converts the instance_type to the Vast GPU name, finds the specs for the
@@ -123,6 +124,10 @@ def launch(name: str,
     if secure_only:
         query.append('datacenter=true')
         query.append('hosting_type>=1')
+    if min_cuda_version is not None:
+        query.append(f'cuda_max_good>={min_cuda_version}')
+        logger.info(f'Vast.ai search: filtering by cuda_max_good>='
+                     f'{min_cuda_version}')
     query_str = ' '.join(query)
 
     instance_list = vast.vast().search_offers(query=query_str)
