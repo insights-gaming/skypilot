@@ -1659,6 +1659,22 @@ def get_config_schema():
                 'create_instance_kwargs': {
                     'type': 'object',
                 },
+                'min_cuda_version': {
+                    'type': 'number',
+                },
+            }
+        },
+        'runpod': {
+            'type': 'object',
+            'required': [],
+            'additionalProperties': False,
+            'properties': {
+                'allowed_cuda_versions': {
+                    'type': 'array',
+                    'items': {
+                        'type': 'string',
+                    },
+                },
             }
         },
         'nebius': {
