@@ -1659,8 +1659,12 @@ def get_config_schema():
                 'create_instance_kwargs': {
                     'type': 'object',
                 },
-                'min_cuda_version': {
-                    'type': 'number',
+                'cuda_max_good': {
+                    'type': 'object',
+                    'properties': {
+                        'gte': {'type': 'number'},
+                        'lt': {'type': 'number'},
+                    },
                 },
             }
         },

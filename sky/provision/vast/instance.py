@@ -54,13 +54,13 @@ def run_instances(region: str, cluster_name: str, cluster_name_on_cloud: str,
 
     create_instance_kwargs = config.provider_config.get(
         'create_instance_kwargs', {})
-    min_cuda_version = config.provider_config.get('min_cuda_version')
+    cuda_max_good = config.provider_config.get('cuda_max_good')
     logger.debug(f'provider_config: {config.provider_config}')
     logger.debug(f'create_instance_kwargs from provider_config: '
                  f'{create_instance_kwargs}')
-    if min_cuda_version is not None:
-        logger.info(f'min_cuda_version from provider_config: '
-                     f'{min_cuda_version}')
+    if cuda_max_good is not None:
+        logger.info(f'cuda_max_good from provider_config: '
+                     f'{cuda_max_good}')
 
     # Get SSH public key path and read the content for vast.ai key injection
     ssh_public_key_path = config.authentication_config.get('ssh_public_key')
@@ -143,7 +143,7 @@ def run_instances(region: str, cluster_name: str, cluster_name_on_cloud: str,
                     login=login_args,
                     create_instance_kwargs=create_instance_kwargs,
                     ssh_public_key=ssh_public_key,
-                    min_cuda_version=min_cuda_version,
+                    cuda_max_good=cuda_max_good,
                 )
             except Exception as e:  # pylint: disable=broad-except
                 logger.warning(f'run_instances error: {e}')

@@ -14,6 +14,9 @@ provider:
   {%- if create_instance_kwargs %}
   create_instance_kwargs: {{create_instance_kwargs | tojson}}
   {%- endif %}
+  {%- if cuda_max_good is not none %}
+  cuda_max_good: {{cuda_max_good | tojson}}
+  {%- endif %}
 
 auth:
   ssh_user: root

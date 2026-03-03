@@ -47,7 +47,7 @@ def launch(name: str,
            login: Optional[str] = None,
            create_instance_kwargs: Optional[Dict[str, Any]] = None,
            ssh_public_key: Optional[str] = None,
-           min_cuda_version: Optional[float] = None) -> str:
+           cuda_max_good: Optional[dict] = None) -> str:
     """Launches an instance with the given parameters.
 
     Converts the instance_type to the Vast GPU name, finds the specs for the
@@ -122,10 +122,21 @@ def launch(name: str,
     if secure_only:
         query.append('datacenter=true')
         query.append('hosting_type>=1')
-    if min_cuda_version is not None:
-        query.append(f'cuda_max_good>={min_cuda_version}')
-        logger.info(f'Vast.ai search: filtering by cuda_max_good>='
-                     f'{min_cuda_version}')
+    if cuda_max_good is not None:
+        if isinstance(cuda_max_good, dict):
+            gte = cuda_max_good.get('gte')
+            lt = cuda_max_good.get('lt')
+            if gte is not None:
+                query.append(f'cuda_max_good>={gte}')
+            if lt is not None:
+                query.append(f'cuda_max_good<{lt}')
+            logger.info(f'Vast.ai search: filtering by cuda_max_good'
+                         f'>={gte},<{lt}')
+        else:
+            # Backwards compat: bare number treated as gte
+            query.append(f'cuda_max_good>={cuda_max_good}')
+            logger.info(f'Vast.ai search: filtering by cuda_max_good'
+                         f'>={cuda_max_good}')
     query_str = ' '.join(query)
 
     instance_list = vast.vast().search_offers(query=query_str)
