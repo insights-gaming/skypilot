@@ -141,15 +141,19 @@ class LazyDataFrame:
 
     @annotations.lru_cache(scope='request')
     def _load_df(self) -> 'pd.DataFrame':
-        if self._update_if_stale_func() or self._df is None:
-            try:
-                self._df = pd.read_csv(self._filename)
-            except Exception as e:  # pylint: disable=broad-except
-                # As users can manually modify the catalog, read_csv can fail.
-                logger.error(f'Failed to read {self._filename}. '
-                             'To fix: delete the csv file and try again.')
-                with ux_utils.print_exception_no_traceback():
-                    raise e
+        self._update_if_stale_func()
+        try:
+            self._df = pd.read_csv(self._filename)
+        except Exception as e:  # pylint: disable=broad-except
+            # As users can manually modify the catalog, read_csv can fail.
+            if self._df is not None:
+                logger.warning(f'Failed to re-read {self._filename}, '
+                               'using previously loaded catalog.')
+                return self._df
+            logger.error(f'Failed to read {self._filename}. '
+                         'To fix: delete the csv file and try again.')
+            with ux_utils.print_exception_no_traceback():
+                raise e
         return self._df
 
     def __getattr__(self, name: str):
